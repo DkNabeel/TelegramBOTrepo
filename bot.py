@@ -112,6 +112,7 @@ async def stats(client, message):
 threading.Thread(target=run_web).start()   # 🔥 IMPORTANT (PORT FIX)
 from pyrogram import idle
 
+print("VERSION 2 CODE RUNNING") 
 app.start()
 print("Bot started!")
 idle()
