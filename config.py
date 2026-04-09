@@ -1,9 +1,9 @@
 import os
 
-API_ID = int(os.getenv("29489981"))
-API_HASH = os.getenv("d06d320353dd369c577b33be893c622b")
-BOT_TOKEN = os.getenv("8083538429:AAG49IcZunYqVyuqz_7S1ynKOvbRUR38OI4")
-MONGO_URI = os.getenv("mongodb+srv://Nabeel: NPGzcTGYiqszW0j7y @cluster0.g5xiukh.mongodb.net/?appName=Cluster0")
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+MONGO_URI = os.getenv("MONGO_URI")
 
 # ===== BOT INFO =====
 BOT_NAME = "Movie Bot 🎬"
