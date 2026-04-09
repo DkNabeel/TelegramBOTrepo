@@ -1,3 +1,15 @@
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+def run_server():
+    server = HTTPServer(("0.0.0.0", 10000), Handler)
+    server.serve_forever()
 import asyncio
 
 # Fix event loop issue
