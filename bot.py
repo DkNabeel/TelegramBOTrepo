@@ -1,6 +1,4 @@
 import asyncio
-import threading
-from flask import Flask
 
 # Fix event loop issue
 try:
@@ -8,21 +6,11 @@ try:
 except RuntimeError:
     asyncio.set_event_loop(asyncio.new_event_loop())
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from config import *
 from database import *
-
-# ---------------- FLASK (FOR RENDER PORT) ----------------
-app_flask = Flask(__name__)
-
-@app_flask.route("/")
-def home():
-    return "Bot is alive!"
-
-def run_web():
-    app_flask.run(host="0.0.0.0", port=10000)
 
 # ---------------- BOT ----------------
 app = Client("movie_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
@@ -52,7 +40,11 @@ def sub_buttons():
 async def start(client, message):
     user_id = message.from_user.id
 
-    await users.update_one({"id": user_id}, {"$set": {"id": user_id}}, upsert=True)
+    # TEMP SAFE (prevents crash if DB issue)
+    try:
+        await users.update_one({"id": user_id}, {"$set": {"id": user_id}}, upsert=True)
+    except:
+        pass
 
     if not await is_subscribed(client, user_id):
         return await message.reply(
@@ -79,26 +71,34 @@ async def search(client, message):
     query = message.text.lower()
 
     results = []
-    async for file in files.find({"name": {"$regex": query}}).limit(5):
-        results.append(file)
+    try:
+        async for file in files.find({"name": {"$regex": query}}).limit(5):
+            results.append(file)
+    except:
+        return await message.reply("⚠️ Database error")
 
     if not results:
-        await requests.insert_one({"movie": query, "user": user_id})
+        try:
+            await requests.insert_one({"movie": query, "user": user_id})
+        except:
+            pass
         return await message.reply("❌ Not found. Request sent!")
 
     for file in results:
         msg = await message.reply_document(file["file_id"])
-
         await asyncio.sleep(AUTO_DELETE)
         await msg.delete()
 
 # ---------- INDEX ----------
 @app.on_message(filters.chat(SOURCE_CHANNEL) & filters.document)
 async def index(client, message):
-    await files.insert_one({
-        "name": message.document.file_name.lower(),
-        "file_id": message.document.file_id
-    })
+    try:
+        await files.insert_one({
+            "name": message.document.file_name.lower(),
+            "file_id": message.document.file_id
+        })
+    except:
+        pass
 
     await client.send_message(LOG_CHANNEL, f"Indexed: {message.document.file_name}")
 
@@ -108,14 +108,10 @@ async def stats(client, message):
     count = await users.count_documents({})
     await message.reply(f"👥 Users: {count}")
 
-# ---------------- RUN ----------------
-from pyrogram import idle
-
-threading.Thread(target=run_web, daemon=True).start()
-
-print("VERSION 3 RUNNING")
+# ---------- RUN ----------
+print("BOT STARTING...")
 
 app.start()
-print("Bot started!")
+print("BOT STARTED SUCCESSFULLY")
 
 idle()
