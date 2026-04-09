@@ -3,7 +3,7 @@ import os
 API_ID = 29489981
 API_HASH = "d06d320353dd369c577b33be893c622b"
 BOT_TOKEN = "8083538429:AAG49IcZunYqVyuqz_7S1ynKOvbRUR38OI4"
-MONGO_URI = "mongodb+srv://Nabeel:Nabeel123 @cluster0.g5xiukh.mongodb.net/?appName=Cluster0"
+MONGO_URI = "mongodb+srv://phantom:0PZUjf3ZcJdQUS90@cluster0.mpo2bf5.mongodb.net/?appName=Cluster0"
 
 # ===== BOT INFO =====
 BOT_NAME = "Movie Bot 🎬"
