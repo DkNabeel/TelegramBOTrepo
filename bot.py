@@ -109,10 +109,13 @@ async def stats(client, message):
     await message.reply(f"👥 Users: {count}")
 
 # ---------------- RUN ----------------
-threading.Thread(target=run_web).start()   # 🔥 IMPORTANT (PORT FIX)
 from pyrogram import idle
 
-print("VERSION 2 CODE RUNNING") 
+threading.Thread(target=run_web, daemon=True).start()
+
+print("VERSION 3 RUNNING")
+
 app.start()
 print("Bot started!")
+
 idle()
