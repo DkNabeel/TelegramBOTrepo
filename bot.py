@@ -109,6 +109,8 @@ async def stats(client, message):
     await message.reply(f"👥 Users: {count}")
 
 # ---------- RUN ----------
+threading.Thread(target=run_server, daemon=True).start()
+
 print("BOT STARTING...")
 
 app.start()
