@@ -110,4 +110,8 @@ async def stats(client, message):
 
 # ---------------- RUN ----------------
 threading.Thread(target=run_web).start()   # 🔥 IMPORTANT (PORT FIX)
-app.run()
+from pyrogram import idle
+
+app.start()
+print("Bot started!")
+idle()
