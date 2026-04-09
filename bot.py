@@ -2,17 +2,19 @@ import asyncio
 import threading
 from flask import Flask
 
+# Fix event loop issue
 try:
     asyncio.get_running_loop()
 except RuntimeError:
     asyncio.set_event_loop(asyncio.new_event_loop())
+
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
 
 from config import *
 from database import *
 
+# ---------------- FLASK (FOR RENDER PORT) ----------------
 app_flask = Flask(__name__)
 
 @app_flask.route("/")
@@ -22,12 +24,13 @@ def home():
 def run_web():
     app_flask.run(host="0.0.0.0", port=10000)
 
+# ---------------- BOT ----------------
 app = Client("movie_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 # ---------- FORCE SUB ----------
 async def is_subscribed(client, user_id):
     if not FORCE_CHANNELS:
-        return True   # skip force if empty
+        return True
 
     for ch in FORCE_CHANNELS:
         try:
@@ -52,7 +55,10 @@ async def start(client, message):
     await users.update_one({"id": user_id}, {"$set": {"id": user_id}}, upsert=True)
 
     if not await is_subscribed(client, user_id):
-        return await message.reply("⚠️ Join channels first!", reply_markup=sub_buttons())
+        return await message.reply(
+            "⚠️ Join channels first!",
+            reply_markup=sub_buttons()
+        )
 
     await message.reply_photo(
         photo=START_IMAGE,
@@ -65,7 +71,10 @@ async def search(client, message):
     user_id = message.from_user.id
 
     if not await is_subscribed(client, user_id):
-        return await message.reply("⚠️ Join channels first!", reply_markup=sub_buttons())
+        return await message.reply(
+            "⚠️ Join channels first!",
+            reply_markup=sub_buttons()
+        )
 
     query = message.text.lower()
 
@@ -99,5 +108,6 @@ async def stats(client, message):
     count = await users.count_documents({})
     await message.reply(f"👥 Users: {count}")
 
-# ---------- RUN ----------
+# ---------------- RUN ----------------
+threading.Thread(target=run_web).start()   # 🔥 IMPORTANT (PORT FIX)
 app.run()
