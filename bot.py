@@ -65,7 +65,6 @@ async def start(client, message):
         )
 
     await message.reply_photo(
-        photo=START_IMAGE,
         caption=START_MSG
     )
 
