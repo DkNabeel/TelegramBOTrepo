@@ -9,6 +9,9 @@ app = Client("movie_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 # ---------- FORCE SUB ----------
 async def is_subscribed(client, user_id):
+    if not FORCE_CHANNELS:
+        return True   # skip force if empty
+
     for ch in FORCE_CHANNELS:
         try:
             member = await client.get_chat_member(ch, user_id)
