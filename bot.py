@@ -1,4 +1,6 @@
 import asyncio
+import threading
+from flask import Flask
 
 try:
     asyncio.get_running_loop()
@@ -6,10 +8,19 @@ except RuntimeError:
     asyncio.set_event_loop(asyncio.new_event_loop())
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-import asyncio
+
 
 from config import *
 from database import *
+
+app_flask = Flask(__name__)
+
+@app_flask.route("/")
+def home():
+    return "Bot is alive!"
+
+def run_web():
+    app_flask.run(host="0.0.0.0", port=10000)
 
 app = Client("movie_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
